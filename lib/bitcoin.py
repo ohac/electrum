@@ -40,24 +40,30 @@ import pyaes
 TESTNET = False
 NOLNET = False
 ADDRTYPE_P2PKH = 50
-ADDRTYPE_P2SH = 5
+ADDRTYPE_P2SH = 55
+ADDRTYPE_P2SH_ALT = 5
 ADDRTYPE_P2WPKH = 6
-XPRV_HEADER = 0x019d9cfe
-XPUB_HEADER = 0x019da462
+#XPRV_HEADER = 0x0488ade4
+XPRV_HEADER = 0x019d9cfe #todo
+#XPUB_HEADER = 0x0488b21e
+XPUB_HEADER = 0x019da462 #todo
+XPRV_HEADER_ALT = 0x019d9cfe #todo
+XPUB_HEADER_ALT = 0x019da462 #todo
 HEADERS_URL = "https://sound.sighash.info/blockchain_headers"
 GENESIS = "ff9f1c0116d19de7c9963845e129f9ed1bfc0b376eb54fd7afa42e0d418c8bb6"
 
 def set_testnet():
-    global ADDRTYPE_P2PKH, ADDRTYPE_P2SH, ADDRTYPE_P2WPKH
+    global ADDRTYPE_P2PKH, ADDRTYPE_P2SH, ADDRTYPE_P2SH_ALT, ADDRTYPE_P2WPKH
     global XPRV_HEADER, XPUB_HEADER
     global TESTNET, HEADERS_URL
     global GENESIS
     TESTNET = True
     ADDRTYPE_P2PKH = 111
-    ADDRTYPE_P2SH = 196
+    ADDRTYPE_P2SH = 117
+    ADDRTYPE_P2SH_ALT = 196
     ADDRTYPE_P2WPKH = 3
-    XPRV_HEADER = 0x0436ef7d
-    XPUB_HEADER = 0x0436f6e1
+    XPRV_HEADER = 0x04358394
+    XPUB_HEADER = 0x043587cf
     HEADERS_URL = "https://example.com/testnet_headers" # TODO
     GENESIS = "a2b106ceba3be0c6d097b2a6a6aacf9d638ba8258ae478158f449c321061e0b2"
 
@@ -80,6 +86,8 @@ def set_nolnet():
 
 ################################## transactions
 
+DUST_SOFT_LIMIT = 100000
+MIN_RELAY_TX_FEE = 100000
 FEE_STEP = 10000
 MAX_FEE_RATE = 300000
 FEE_TARGETS = [25, 10, 5, 2]
@@ -437,7 +445,7 @@ def is_address(addr):
         addrtype, h = bc_address_to_hash_160(addr)
     except Exception:
         return False
-    if addrtype not in [ADDRTYPE_P2PKH, ADDRTYPE_P2SH]:
+    if addrtype not in [ADDRTYPE_P2PKH, ADDRTYPE_P2SH, ADDRTYPE_P2SH_ALT]:
         return False
     return addr == hash_160_to_bc_address(h, addrtype)
 
@@ -449,7 +457,7 @@ def is_p2pkh(addr):
 def is_p2sh(addr):
     if is_address(addr):
         addrtype, h = bc_address_to_hash_160(addr)
-        return addrtype == ADDRTYPE_P2SH
+        return addrtype in [ADDRTYPE_P2SH, ADDRTYPE_P2SH_ALT]
 
 def is_private_key(key):
     try:
